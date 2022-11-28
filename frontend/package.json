@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codekraft-studio/vue-record": "^0.0.3",
+    "@mdi/font": "7.0.96",
+    "axios": "^1.1.3",
+    "cors": "^2.8.5",
+    "roboto-fontface": "*",
+    "vue": "^3.2.38",
+    "vue-media-recorder": "^0.1.25",
+    "vuetify": "^3.0.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "vite": "^3.1.9",
+    "vite-plugin-vuetify": "^1.0.0-alpha.12"
+  }
+}
