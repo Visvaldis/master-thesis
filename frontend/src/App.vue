@@ -4,7 +4,7 @@
       <div class="d-flex align-center">
 
         <v-avatar class="mx-3" size="60">
-          <v-img src="src/assets/fox_samurai_1.jpg" contain alt="Logo" />
+          <v-img src="https://cdn.midjourney.com/fb5be040-a9f2-4f96-860c-a9d33ebdd243/grid_0.png" contain alt="Logo" />
         </v-avatar>
         <v-toolbar-title>Face recognition</v-toolbar-title>
       </div>

@@ -6,30 +6,16 @@
       <v-row
       style="height: 100%;"
       >
-        <v-col class="bg-secondary"  cols="3">
-          <div color="secondary">
-
-          </div>
-        </v-col>
-        <v-col cols="9">
-         <v-col cols="12" class="mb-3">
-        </v-col>
+      <v-btn @click="tt()">
+        lol
+      </v-btn>
         <v-col cols="12">
-          <v-card variant="tonal" :loading="loading" v-if="ifResult" width="400">
-            <template v-slot:title>
-              This is a {{title}} result
-            </template>
+          <blockcain-auth  v-if="trigger" :walletId.sync="walletId">
 
-            <template v-slot:text v-if="result">
-              {{result}}
-            </template>
-          </v-card>
-        </v-col>
-        <v-col cols="12">
-         <camera-capture-test>
+          </blockcain-auth>
+         <camera-capture v-if="!trigger">
 
-         </camera-capture-test>
-        </v-col>
+         </camera-capture>
         </v-col>
       </v-row>
     </v-container>
@@ -38,7 +24,8 @@
 <script>
 import axios from 'axios';
 
-import CameraCaptureTest from './CameraCaptureTest.vue';
+import CameraCapture from './CameraCapture.vue';
+import BlockcainAuth from './BlockcainAuth.vue';
 
 export default {
   name: "MainPage",
@@ -48,11 +35,14 @@ export default {
     loading: false,
     ifResult: false,
     result: {},
-    title: ""
+    title: "",
+    trigger: true, 
+    walletId: ""
   }),
   
   components:{
-    CameraCaptureTest,
+    CameraCapture,
+    BlockcainAuth
   },
   
   methods: {
@@ -62,6 +52,9 @@ export default {
       if (file) {
         this.photoUrl = URL.createObjectURL(file);
       }
+    },
+    tt(){
+      console.log(this.walletId);
     },
 
       get(){

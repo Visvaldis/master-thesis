@@ -1,180 +1,152 @@
+<!-- eslint-disable no-unused-vars -->
 <template>
   <div>
-    <v-row class="camera-box">
-        <v-col cols="12" v-if="timeShow">
-            <div v-if="countDown > 0">
-                Please wait for {{countDown}} seconds
-            </div>
-            <div v-else>
-                Success!
-            </div>
-        </v-col>
-      <v-col cols="6">
-        <v-card :loading="isLoading">
-          <div v-if="isCameraOpen">
-            <video
-              v-show="!isPhotoTaken"
-              ref="camera"
-              class="camera"
-              autoplay
-            ></video>
-
-          </div>
-        </v-card>
-      </v-col>
-
-      <v-col cols="6">
-        <v-card :loading="isLoading">
-          <div>
-            <canvas
-             id="photoTaken"
-             ref="canvas" 
-             class="camera">
-            </canvas>
-
-          </div>
-        </v-card>
-      </v-col>
-
+    <v-row >
       <v-col cols="12">
-        <v-btn :loading="isLoading" block color="success" @click="recordVideo">
+        <div v-if="timeShow && countDown > 0">Please wait for {{ countDown }} seconds</div>
+        <div v-else>Success!</div>
+        <strong >{{result}}</strong>
+      </v-col>
+      <v-col cols="6">
+        <v-card class="camera-box" :loading="isLoading">
+          <div>
+            <video ref="camera" class="camera" autoplay></video>
+          </div>
+        </v-card>
+      </v-col>
+
+      <v-col cols="6">
+            <canvas v-show="false" id="photoTaken" ref="canvas" class="camera" width="640" height="480" > </canvas>
+      </v-col>
+      
+
+      <v-col cols="5">
+        <v-text-field
+        label="User Name"
+        :rules="rules"
+        hide-details="auto"
+        class="mb-3"
+        v-model="userName"
+
+    ></v-text-field>
+    
+        <v-btn :loading="isLoading" :disabled="!userName" block color="success" @click="recordSeries()">
           <v-icon>mdi-camera</v-icon>
         </v-btn>
+        <v-btn :loading="isLoading" :disabled="!userName" block color="primary" @click="login()">
+          <v-icon>mdi-login</v-icon>
+        </v-btn>
+        
+        <span v-if="countDown == 0">Sent!</span>
+       
       </v-col>
       <v-col cols="12">
         <ul>
-          <li v-for="c,i in captures" :key="i">
-              <img src="{{ c }}" height="50" />
+          <li v-for="(src, i) in captures" :key="i">
+            <img :src="src" style="height: 80px" />
           </li>
         </ul>
       </v-col>
     </v-row>
-
-    <div v-if="isCameraOpen && !isLoading" class="camera-shoot">
-      <button type="button" class="button" @click="takePhoto">
-        <img
-          src="https://img.icons8.com/material-outlined/50/000000/camera--v2.png"
-        />
-      </button>
-    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
   name: "CameraCapture",
 
   data: () => ({
-    isCameraOpen: true,
-    isPhotoTaken: false,
-    isShotPhoto: false,
     isLoading: false,
-    link: "#",
-    countDown: 5,
+    captures: [],
     timeShow: false,
-    camera_stream: null,
-    media_recorder: null,
-    blobs_recorded : [], 
-    downloadLink: "",
-    captures: []
+    countDown: 15,
+    rules: [
+        value => !!value || 'Required.',
+      ],
+    userName: "",
+    result: ""
   }),
 
   mounted() {
-    this.createCameraElement();
-  },
+    this.isLoading = true;
 
-  unmounted() {
-    this.stopCameraStream();
-  },
-  methods: {
-    toggleCamera() {
-      if (this.isCameraOpen) {
-        this.isCameraOpen = false;
-        this.isPhotoTaken = false;
-        this.isShotPhoto = false;
-        this.stopCameraStream();
-      } else {
-        this.isCameraOpen = true;
-        this.createCameraElement();
-      }
-    },
+    const constraints = (window.constraints = {
+      audio: false,
+      video: true,
+    });
 
-    async createCameraElement() {
-      this.isLoading = true;
-
-      const constraints = (window.constraints = {
-        audio: false,
-        video: true,
-      });
-
-      this.camera_stream = await navigator.mediaDevices
-        .getUserMedia(constraints);
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
         this.isLoading = false;
-        this.$refs.camera.srcObject = this.camera_stream;
-    },
-
-    stopCameraStream() {
-      let tracks = this.$refs.camera.srcObject.getTracks();
-
-      tracks.forEach((track) => {
-        track.stop();
+        this.$refs.camera.srcObject = stream;
+      })
+      .catch((error) => {
+        this.isLoading = false;
+        alert("May the browser didn't support or there is some errors.", error);
       });
-    },
+  },
 
-    takePhoto() {
-      if (!this.isPhotoTaken) {
-        this.isShotPhoto = true;
-
-        const FLASH_TIMEOUT = 50;
-
-        setTimeout(() => {
-          this.isShotPhoto = false;
-        }, FLASH_TIMEOUT);
-      }
-
-      this.isPhotoTaken = !this.isPhotoTaken;
-
-      const context = this.$refs.canvas.getContext("2d");
-      context.drawImage(this.$refs.camera, 0, 0, 450, 337.5);
-    },
-
-    async recordVideo(){
-        this.timeShow = true;
-        this.countDown = 5;
-        this.record();
-    },
-
-    record(){
-        for (let i = 0; i < this.countDown; i++) {
-            const context = this.$refs.canvas.getContext("2d");
-            context.drawImage(this.$refs.camera, 0, 0, 400, 400);
-            var dataURL = this.$refs.canvas.toDataURL();
-            this.sendPhotosToApi(dataURL);
-            this.wait();
-        }
-    },
-
-    async sendPhotosToApi(url) {
-        try {
-
+  unmounted() {},
+  methods: {
+     
+    async sendToApi(){
+      console.log(this.captures.length);
+      let path = `http://localhost:5000/load_faces`;
         let data = {
-            'image': url
-        }
-      await axios.post("post/", data);
-    } catch (error) {
-                console.log(error)
-            }
+            images: this.captures,
+            name: this.userName
+          };
+        console.log(data);
+        await axios.post(path, data);
+    },
 
+    async recordSeries(){
+      this.timeShow = true;
+      this.captures = [];
+      this.countDown = 15;
+      for (this.countDown; this.countDown > 0; this.countDown--){
+        let url = await this.makePhotoWithInterval();
+        this.captures.push(url);
+      }
+      await this.sendToApi();
+    },
+
+    makePhotoWithInterval(){
+      // eslint-disable-next-line no-unused-vars
+      return new Promise((resolve, _) => setTimeout(() => { 
+                  resolve(this.getCaptureUrl());
+      }, 200));
 
     },
-    wait() {
-        if (this.countDown > 0) {
-            setTimeout(() => {
-                this.countDownTimer()
-            }, 1000)
-        }
+
+    getCaptureUrl(){
+      this.$refs.canvas
+                  .getContext("2d")
+                  .drawImage(this.$refs.camera, 0, 0, 640, 480);
+                  return this.$refs.canvas.toDataURL("image/png");
     },
+    
+    async login(){
+      this.result = ""
+      let path = `http://localhost:5000/find_face`;
+        let image = this.getCaptureUrl();
+        let data = {
+            image: image,
+            name: this.userName
+          };
+        console.log(data);
+        await axios.post(path, data).then((response) => {
+
+          this.result = JSON.stringify(response.data);
+          console.log(this.result);
+        }).catch((error) => {
+           console.log(error);
+        });
+    }
+
+  
   },
 };
 </script>
@@ -185,8 +157,16 @@ export default {
   height: 100%;
 }
 
+ul {
+  list-style-type:none;
+}
+ul > li {
+    display: inline-block;
+    /* You can also add some margins here to make it look prettier */
+}
+
 .camera-box {
   width: 400px;
-  height: 400px;
+  height: 300px;
 }
 </style>
