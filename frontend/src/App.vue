@@ -4,9 +4,9 @@
       <div class="d-flex align-center">
 
         <v-avatar class="mx-3" size="60">
-          <v-img src="https://cdn.midjourney.com/fb5be040-a9f2-4f96-860c-a9d33ebdd243/grid_0.png" contain alt="Logo" />
+          <v-img src="@/assets/logo.svg" class="filter-green" contain alt="Logo" />
         </v-avatar>
-        <v-toolbar-title>Face recognition</v-toolbar-title>
+        <v-toolbar-title>Blockchain account management</v-toolbar-title>
       </div>
       <v-spacer></v-spacer>
     </v-app-bar>
@@ -16,8 +16,8 @@
     </v-main>
 
     <v-footer app padless color="primary">
-      <v-col class="text-center" cols="12">
-        {{ new Date().getFullYear() }} — <strong>Vuetify</strong>
+      <v-col class="text-center white--text" cols="12">
+        {{ new Date().getFullYear() }} — <strong>Vsevolod Slavinskyi</strong>
       </v-col>
     </v-footer>
   </v-app>
@@ -26,3 +26,10 @@
 <script setup>
 import MainPage from '@/components/MainPage.vue'
 </script>
+
+<style scoped>
+   .filter-green{
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+    border-radius: 0px;
+    }
+</style>
