@@ -1,9 +1,15 @@
 <template>
   <v-card
-  class="d-flex flex-column justify-center align-center pb-5"
-  flat
-  height="250">
-    <v-img class="ml-n5" width="500" contain src="@/assets/auth_process.png"></v-img>
+    class="d-flex flex-column justify-center align-center pb-5"
+    flat
+    height="250"
+  >
+    <v-img
+      class="ml-n5"
+      width="500"
+      contain
+      src="@/assets/auth_process.png"
+    ></v-img>
 
     <v-btn
       x-large
@@ -22,7 +28,6 @@
         mdi-check
       </v-icon>
     </v-btn>
-    
   </v-card>
 </template>
 
@@ -52,8 +57,6 @@ export default {
     },
     datastore: null,
   }),
-
-
 
   components: {},
   mounted() {
@@ -100,10 +103,9 @@ export default {
         console.log("getProfileFromCeramic", this.datastore);
         let did = this.datastore.id;
         did = did.substring(did.lastIndexOf(":") + 1);
-        
+
         this.blockchainProfile = await this.datastore.get("BasicProfile");
         this.$emit("onConnect", did, this.datastore);
-
       } catch (error) {
         console.error(error);
       }

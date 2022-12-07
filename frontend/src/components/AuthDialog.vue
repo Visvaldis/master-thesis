@@ -23,34 +23,38 @@
         </v-btn>
       </v-toolbar>
       <div v-if="step == 1">
-        <blockcain-auth-card 
-            @onConnect="walletConnected">
+        <blockcain-auth-card @onConnect="walletConnected">
         </blockcain-auth-card>
       </div>
 
       <div v-if="step == 2">
-        <face-recognition 
-            @faceRecognized="onFaceRecognized"
-            :walletId="walletId"> 
+        <face-recognition
+          @faceRecognized="onFaceRecognized"
+          :walletId="walletId"
+        >
         </face-recognition>
         <v-snackbar
-            top
-            right
-            text
-            :color="snackColor"
-            v-model="snackbarShow"
+          top
+          right
+          text
+          :color="snackColor"
+          v-model="snackbarShow"
+        >
+          {{ snackbarText }}
+
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              class="me-1"
+              icon
+              small
+              light
+              v-bind="attrs"
+              @click="snackbarShow = false"
             >
-                {{ snackbarText }}
-        
-                <template v-slot:action="{ attrs }">
-                <v-btn class="me-1"  icon small light v-bind="attrs" @click="snackbarShow = false"
-                >
-                    <v-icon  color="grey darken-2" >
-                    mdi-close
-                    </v-icon>
-                </v-btn>
-                </template>
-            </v-snackbar>
+              <v-icon color="grey darken-2"> mdi-close </v-icon>
+            </v-btn>
+          </template>
+        </v-snackbar>
       </div>
     </v-card>
   </v-dialog>
@@ -72,7 +76,7 @@ export default {
     snackbarShow: false,
     snackColor: "primary",
     snackbarText: "",
-    dataStore: null
+    dataStore: null,
   }),
 
   props: {
@@ -94,33 +98,37 @@ export default {
       this.step++;
     },
 
-    onFaceRecognized(recognitionStatus){
-        [this.snackbarText, this.snackColor] = this.getSnackbarText(recognitionStatus)
-        this.snackbarShow = true;
-        if (recognitionStatus == FaceRecognitionStatuses.Valid){
-            this.onClose();
-            this.$emit("authFinished", this.walletId, this.dataStore);
-        }
+    onFaceRecognized(recognitionStatus) {
+      [this.snackbarText, this.snackColor] =
+        this.getSnackbarText(recognitionStatus);
+      this.snackbarShow = true;
+      if (recognitionStatus == FaceRecognitionStatuses.Valid) {
+        this.onClose();
+        this.$emit("authFinished", this.walletId, this.dataStore);
+      }
     },
 
-    getSnackbarText(recognitionStatus){
-        console.log("getSnackbarText",recognitionStatus, FaceRecognitionStatuses.Valid, recognitionStatus == FaceRecognitionStatuses.Valid);
-        switch(recognitionStatus) {
+    getSnackbarText(recognitionStatus) {
+      console.log(
+        "getSnackbarText",
+        recognitionStatus,
+        FaceRecognitionStatuses.Valid,
+        recognitionStatus == FaceRecognitionStatuses.Valid
+      );
+      switch (recognitionStatus) {
         case FaceRecognitionStatuses.Valid:
-            if(this.profile && this.profile.name)
-                return [`Welcome back, ${this.profile.name}!`, "success"];
-            else 
-                return [`Welcome back!`, "success"];
+          if (this.profile && this.profile.name)
+            return [`Welcome back, ${this.profile.name}!`, "success"];
+          else return [`Welcome back!`, "success"];
         case FaceRecognitionStatuses.Invalid:
           return ["You are not the right person, please try again!", "error"];
         case FaceRecognitionStatuses.FaceNotFound:
           return ["Face was not found, please take another photo.", "warning"];
         default:
           return ["Some error happens, please try again.", "info"];
-        }
-    }
+      }
+    },
   },
-
 };
 </script>
 
