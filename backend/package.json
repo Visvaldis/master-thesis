@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@codekraft-studio/vue-record": "^0.0.3",
-    "vue-media-recorder": "^0.1.25"
-  }
-}

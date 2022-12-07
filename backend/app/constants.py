@@ -2,7 +2,7 @@ from pathlib import Path
 
 class FaceAuthStatus():
     Valid = "Valid"
-    Invalid = "Invalid",
+    Invalid = "Invalid"
     FaceNotFound = "FaceNotFound"
 
 PathToImages = 'data/faces/'
