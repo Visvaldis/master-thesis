@@ -16,6 +16,12 @@ current_face_encodings = []
 current_face_names =[]
 frame_resizing = 0.5#1#0.25
 
+def check_existence(id):
+    encoding_file_name = id + ".pic"
+    filename = os.path.join(constants.PathToEncodings, encoding_file_name)
+    my_file = Path(filename)
+    return my_file.is_file()
+
 def load_encoding_images(userName):
     encoding_file_name = userName + ".pic"
     filename = os.path.join(constants.PathToEncodings, encoding_file_name)

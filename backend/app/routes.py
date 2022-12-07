@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, request
 from app import service
 from flask_api import status
-
+import json
 
 from app import app,APP_ROOT
 
@@ -18,6 +18,17 @@ def register():
         service.save_encodings(model['name'])
         return "Success", 201
 
+        
+@app.route("/check/<id>",  methods=['GET']) 
+def check(id):
+    if request.method == 'GET':
+        res = {
+            'data' : service.check_existence(id)
+            }
+        
+        return  jsonify(res)
+
+
 @app.route("/find_face",  methods=['POST']) 
 def login():
     if request.method == 'POST':
@@ -25,6 +36,9 @@ def login():
         image = model['image']
         userName = model['name']
         (status) = service.find_face(userName, image[22:])
-        print(status, type(status))
-        return status, 200
+        res = {
+            'data' : status
+            }
+        print(res, type(res))
+        return jsonify(res)
   
