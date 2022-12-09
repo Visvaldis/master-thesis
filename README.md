@@ -36,6 +36,7 @@ npm install
 ### Run  
 
 ```
-npm run dev
+cd frontend
+npm run serve
 ```
 >Local:   http://127.0.0.1:3000/
